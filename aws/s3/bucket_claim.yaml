@@ -1,0 +1,7 @@
+apiVersion: example-api.kjenney.io/v1alpha1
+kind: Bucket
+metadata:
+  name: my-bucket
+spec:
+  region: us-east-1
+  owner: memyselfandi
