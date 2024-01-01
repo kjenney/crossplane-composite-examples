@@ -1,0 +1,32 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: database-with-tags
+spec:
+  compositeTypeRef:
+    apiVersion: example-api.kjenney.io/v1alpha1
+    kind: XMyDatabase
+  resources:
+    - name: StorageBucket
+      base:
+        apiVersion: s3.aws.upbound.io/v1beta1
+        kind: Bucket
+        spec:
+          forProvider:
+            objectLockEnabled: false
+      patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.owner
+          toFieldPath: spec.forProvider.tags
+          transforms:
+          - type: string
+            string:
+              type: Format
+              fmt: '{"Owner": "%s"}'
+          - type: convert
+            convert:
+              toType: object
+              format: json
